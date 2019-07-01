@@ -50,4 +50,8 @@ interface SleepDatabaseDao {
     //function to get all nights by descending order
     @Query("SELECT * FROM daily_sleep_quality_table ORDER BY nightId DESC")
     fun getAllNights(): LiveData<List<SleepNight>>
+
+    //function to get only one night by descending order
+    @Query("SELECT * FROM daily_sleep_quality_table ORDER BY nightId DESC LIMIT 1")
+    fun getTonight(): SleepNight?
 }
