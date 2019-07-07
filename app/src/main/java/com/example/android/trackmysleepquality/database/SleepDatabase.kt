@@ -15,21 +15,35 @@
  */
 
 package com.example.android.trackmysleepquality.database
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "daily_sleep_quality_table")
-data class SleepNight(
-        @PrimaryKey (autoGenerate = true)
-        var nightId: Long = 0L,
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 
-        @ColumnInfo (name = "start_time_milli")
-        var startTimeMilli: Long = System.currentTimeMillis(),
 
-        @ColumnInfo (name = "end_time_milli")
-        var endTimeMilli: Long = startTimeMilli,
+@Database(entities = [SleepNight::class], version = 1)
+abstract class SleepDatabase : RoomDatabase() {
+    abstract val sleepDatabaseDao: SleepDatabaseDao
 
-        @ColumnInfo (name = "quality_rating")
-        var sleepQuality: Int = -1
-)
+    companion object {
+        private var INSTANCE: SleepDatabase? = null
+        fun getInstance(context: Context): SleepDatabase {
+            synchronized(this) {
+                var instance = INSTANCE
+                if (instance == null) {
+                    instance = Room.databaseBuilder(
+                            context.applicationContext,
+                            SleepDatabase::class.java,
+                            "sleep_history_database")
+                            .fallbackToDestructiveMigration()
+                            .build()
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+    }
+
+
+}
